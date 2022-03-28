@@ -1,11 +1,8 @@
 // TODO: Include packages needed for this application
 const inquirer = require("inquirer");
-const fs = require("fs");
-const utils = require("./develop/utils/generateMarkdown");
+const writeFile = require("./utils/generateFile");
+const utils = require("./utils/generateMarkdown");
 
-const writeToFile = utils.promisify(fs.writeFile);
-
-// TODO: Create an array of questions for user input
 const init = () => 
     inquirer.prompt([
         {
@@ -117,56 +114,17 @@ const init = () =>
             message: 'Please list any test information for your project',
         },
     ]);
-    const generateReadme = (answers) =>
-`
-# ${answers.title}\n
-![License: MIT](https://img.shields.io/badge/License-${answers.license}-informational "License Badge")
 
-## ${answers.link}
-
-## ${answers.description}\n
-
-## Table of Contents
-\n* [Installation](#Installation)
-\n* [Usage](#Usage)
-\n* [License](#License)
-\n* [Contributors](#Contributors)
-\n* [Tests](#Tests)
-\n* [Questions](#Questions)
-
-## Installation
-${answers.installation}
-
-## Usage
-${answers.usage}
-
-## License
-This project has the following license: ${answers.license}
-
-## Contributors
-${answers.contribution}
-
-## Tests
-${answers.tests}
-
-## Questions
-Please reach out to me with any questions:
-\nEmail: ${answers.email}
-\nGitHub: https://github.com/${answers.github}
-`
-;
-
-
-
-
-// TODO: Create a function to write README file
-// function writeToFile("README.md", data) {}
-
-// TODO: Create a function to initialize app
-// function init() {}
-
-// Function call to initialize app
 init()
-.then((answers) => writeToFile("README.md", generateReadme(answers)))
-.then(() => console.log('Success! Your README.md file has been generated'))
-.catch((err) => console.error(err));
+    .then(readmeData => {
+        return utils(readmeData);
+    })
+    .then(pageInfo => {
+        return writeFile(pageInfo);
+    })
+    .then(writeFileResponse => {
+        console.log(writeFileResponse);
+    })
+    .catch(err => {
+        console.log(err);
+});
